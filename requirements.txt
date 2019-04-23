@@ -3,4 +3,3 @@ pymysql
 requests
 pyTelegramBotApi
 flask
-logging
