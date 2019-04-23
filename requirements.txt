@@ -1,0 +1,6 @@
+Telebot
+pymysql
+requests
+pyTelegramBotApi
+flask
+logging
