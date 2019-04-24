@@ -1,5 +1,4 @@
 Telebot
-pymysql
 requests
 pyTelegramBotApi
 flask
