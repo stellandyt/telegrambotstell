@@ -1,8 +1,8 @@
 import telebot
 import pyowm
-import logging
-from flask import Flask, request
-import os
+# import logging
+# from flask import Flask, request
+# import os
 
 
 bot = telebot.TeleBot("767640365:AAGLF3nApdXdsJUYXMC-V5VDRIiMaLYoGN8")
@@ -53,27 +53,27 @@ def get_text_messages(message):
 #     return markup
 
 
-if "HEROKU" in list(os.environ.keys()):
-    logger = telebot.logger
-    telebot.logger.setLevel(logging.INFO)
+# if "HEROKU" in list(os.environ.keys()):
+#     logger = telebot.logger
+#     telebot.logger.setLevel(logging.INFO)
 
-    server = Flask(__name__)
+#     server = Flask(__name__)
 
-    @server.route("/bot", methods=['POST'])
-    def getMessage():
-        bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-        return "!", 200
+#     @server.route("/bot", methods=['POST'])
+#     def getMessage():
+#         bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+#         return "!", 200
 
-    @server.route("/")
-    def webhook():
-        bot.remove_webhook()
-        bot.set_webhook(url="https://dashboard.heroku.com/apps/csservbot") # этот url нужно заменить на url вашего Хероку приложения
-        return "?", 200
-    server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
-else:
-    # если переменной окружения HEROKU нету, значит это запуск с машины разработчика.
-    # Удаляем вебхук на всякий случай, и запускаем с обычным поллингом.
-    bot.remove_webhook()
-    bot.polling(none_stop=True)
+#     @server.route("/")
+#     def webhook():
+#         bot.remove_webhook()
+#         bot.set_webhook(url="https://dashboard.heroku.com/apps/csservbot") # этот url нужно заменить на url вашего Хероку приложения
+#         return "?", 200
+#     server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
+# else:
+#     # если переменной окружения HEROKU нету, значит это запуск с машины разработчика.
+#     # Удаляем вебхук на всякий случай, и запускаем с обычным поллингом.
+#     bot.remove_webhook()
+#     bot.polling(none_stop=True)
 
 bot.polling(none_stop=True, interval=0)
