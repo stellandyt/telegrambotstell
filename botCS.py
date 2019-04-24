@@ -3,6 +3,7 @@ import pyowm
 # import logging
 # from flask import Flask, request
 # import os
+from telebot import types
 
 
 bot = telebot.TeleBot("767640365:AAGLF3nApdXdsJUYXMC-V5VDRIiMaLYoGN8")
