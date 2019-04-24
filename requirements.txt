@@ -2,3 +2,4 @@ Telebot
 requests
 pyTelegramBotApi
 flask
+pyowm
