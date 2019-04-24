@@ -22,7 +22,7 @@ def get_text_messages(message):
         if message.text == 'Абакан' or 'Азов' or 'Александров' or 'Алексин' or 'Альметьевск' or 'Анапа' or 'Ангарск' or 'Анжеро-Судженск' or 'Апатиты' or 'Арзамас' or 'Армавир' or 'Арсеньев' or 'Артем':
             asd = True
         else:
-            bot.send_message(message.from_user.id, "Вы ввели неправильный город", )
+            bot.send_message(message.from_user.id, "Вы ввели неправильный город", reply_markup=keyboard())
 
     elif asd == True:
         texty = message.text
@@ -37,7 +37,7 @@ def get_text_messages(message):
         print(answer)
         asd = False
     else:
-        bot.send_message(message.from_user.id, "Я тебя не понимаю :(", )
+        bot.send_message(message.from_user.id, "Я тебя не понимаю :(", reply_markup=keyboard())
 
 # @bot.message_handler(content_types=['text'])
 # def get_message(message):
@@ -46,11 +46,11 @@ def get_text_messages(message):
 #     else:
 #         bot.send_message(message.from_user.id, "гг")
 
-# def keyboard():
-#     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-#     btn1 = types.KeyboardButton('Погода')
-#     markup.add(btn1)
-#     return markup
+def keyboard():
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+    btn1 = types.KeyboardButton('Погода')
+    markup.add(btn1)
+    return markup
 
 
 # if "HEROKU" in list(os.environ.keys()):
