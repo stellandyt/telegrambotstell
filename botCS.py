@@ -1,38 +1,31 @@
 import telebot
 from telebot import types
 import sqlite3
-import requests
 
-token = "982710971:AAHQIucfeFUkm0dPapKhfkIGdkUlf1vcDyY"
-
+token = '918573896:AAEM0r2hDXAJoCwy5WtTFZJ92iEmhxmoVeM'
 bot = telebot.TeleBot(token)
 
-conn = sqlite3.connect("BotST.db", check_same_thread=False)  #, check_same_thread=False
+conn = sqlite3.connect('game.db', check_same_thread=False)
 cursor = conn.cursor()
 
-
 try:
-    cursor.execute("""CREATE TABLE stell
-                      (User_id integer, Username text, Phone text, Group_Id text)
-                   """)
+    cursor.execute('''CREATE TABLE game 
+                    (User_ID integer, Score integer, business text)
+                    ''')
 except sqlite3.OperationalError:
-    print(1)
+    pass
 
-
-
-check = True
-add = False
+score = 0
+check = False
+gg = False
 
 
 @bot.message_handler(commands=['start'])
-def Start_bot(message):
-    bot.send_message(
-        message.chat.id,
-        'Привет! :)\nИспользуй: /help,\nчтобы узнать список доступных команд!.\n',
-    )
+def start(message):
+    bot.send_message(message.chat.id, 'Привет! Ты зашёл в нашу игру!', reply_markup=keyboard())
 
 
-@bot.message_handler(commands=["auto"])
+@bot.message_handler(commands=["Login"])
 def auto_log(message):
     keyboard = types.ReplyKeyboardMarkup(row_width=True, resize_keyboard=True)
     btn_1 = types.KeyboardButton(text="Регистрация/Авторизация", request_contact=True)
@@ -44,20 +37,18 @@ def auto_log(message):
 
 @bot.message_handler(content_types=["contact"])
 def contact(message):
-    global check
+    global check, score
     if message.contact is not None:
         contact_one = message.contact
         us_id = "%s" % contact_one.user_id
-        us_name = "%s" % contact_one.first_name
-        phone = "%s" % contact_one.phone_number
 
-        args = str(phone)
-        cursor.execute(""" SELECT Phone FROM stell WHERE Phone = ? """, [args])
+        args = int(us_id)
+        cursor.execute(""" SELECT User_ID FROM game WHERE User_ID = ? """, [args])
         row = cursor.fetchone()
 
         if row == None:
-            cursor.execute('insert into stell (User_id, Username, Phone) values (?, ?, ?)', (us_id, us_name, phone))
-            print(cursor.execute('select * from stell').fetchall())
+            cursor.execute('insert into game (User_id, Score) values (?, ?)', (us_id, score))
+            print(cursor.execute('select * from game').fetchall())
             conn.commit()
             bot.send_message(message.chat.id, "Вы успешно Зарегистрировались/Авторизовались!", reply_markup=keyboard())
             check = True
@@ -74,104 +65,115 @@ def home(message):
     print(check)
 
 
-@bot.message_handler(commands=['help'])
-def help_command(message):
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    keyboard.add(telebot.types.InlineKeyboardButton('Создатель', url='telegram.me/Stelland'))
-    bot.send_message(
-        message.chat.id,
-        '1) Опаааа.\n' +
-        '2) Раз, два, три.\n' +
-        '3) Ещё текст',
-        reply_markup=keyboard
-    )
-
-
-@bot.message_handler(commands=['para'])
-def para(message):
-    pass
-    global add, cursor
-    bot.send_message(message.chat.id, '123')
-    group = str(message.text)
-    pass
-    if group == '/para' or group == 'пара':
-        name = str(message.from_user.id)
-        print(name)
-        cursor.execute("SELECT Group_Id from stell WHERE Group_Id=? and Username = ?", [group], [name])
-        row = cursor.fetchone()
-        print(row)
-
-        if row != None:
-            bot.send_message(message.from_user.id, "Введите новый api key: ")
-            asd1 = True
-
-        elif asd1 == False:
-            bot.send_message(message.from_user.id, "Введите api key: ")
-            asd = True
-            print(asd)
-
-    elif asd1 == True:
-        conn = pymysql.connect('91.134.194.237', 'gs9966', 'STelland3102YT', 'gs9966')
-        cursor = conn.cursor()
-        name = message.from_user.id
-        print(name)
-        query = "SELECT `user_id` FROM `users` WHERE api_key = %s"
-        args = str(message.text)
-        cursor.execute(query, args)
-        row = cursor.fetchone()
-
-        if row == None:
-            query = "UPDATE `users` SET `api_key`= %s WHERE user_id = %s "
-            args = str(message.text), (str(name))
-            print(args)
-            cursor.execute(query, args)
-            conn.commit()
-            conn.close()
-            print(message.text)
-            asd1 = False
-            bot.send_message(message.from_user.id, "api key - Привязан успешно!", reply_markup=keyboard())
-            print(asd)
-        else:
-            bot.send_message(message.from_user.id, 'Данный api key уже используется!', reply_markup=keyboard())
-            asd1 = False
-
-    # if check == True:
-    #     servstop = "https://www.ks54.ru/Студенту/Расписание_On-Line?group=" % text
-    #     print(servstop)
-    #     # requests.post(servstop)
-    #     bot.send_message(message.from_user.id, "Выполнено", reply_markup=keyboard())
-    # else:
-    #     bot.send_message(message.chat.id, 'Войдите или зарегистрируйтесь, чтобы использовать данную функцию!')
+def get_info(message):
+    uid_new = message.text
+    us_id = message.from_user.id
+    print(uid_new)
+    if uid_new == '1':
+        bus = 'Магнит'
+        # cursor.execute("INSERT INTO game(business) VALUES (?) WHERE User_ID = ?''', [us_id]
+        # conn.commit()
+        cursor.execute('''UPDATE game SET business = 'Магнит' WHERE User_ID = ?''', [us_id])
+        conn.commit()
+        bot.send_message(message.chat.id, 'Вы преобрели: Магнит', reply_markup=keyboard())
+    elif uid_new == '2':
+        cursor.execute('''UPDATE game SET business = 'Пятёрочка' WHERE User_ID = ?''', [us_id])
+        conn.commit()
+        bot.send_message(message.chat.id, 'Вы преобрели: Пятёрочку', reply_markup=keyboard())
+    elif uid_new == '3':
+        cursor.execute('''UPDATE game SET business = 'DNS' WHERE User_ID = ?''', [us_id])
+        conn.commit()
+        bot.send_message(message.chat.id, 'Вы преобрели: DNS', reply_markup=keyboard())
+    else:
+        bot.send_message(message.chat.id, 'Ошибка!', reply_markup=keyboard())
 
 
 @bot.message_handler(content_types=['text'])
-def get_text_messages(message):
-    global add
+def get_text_message(message):
+    global gg, check
+    text = message.text
+    if text == 'Привет' or text == 'привет':
+        bot.send_message(message.chat.id, 'Хааааай', reply_markup=keyboard())
+    elif text == 'Ваш баланс' or text == 'Баланс':
+        us_id = str(message.from_user.id)
+        cursor.execute("SELECT Score from game WHERE User_ID=?", [us_id])
+        row = cursor.fetchone()
+        us_score = row[0]
+        bot.send_message(message.chat.id, 'Ваш баланс: ' + str(us_score) + ' монет.')
+        print(row[0])
+    elif text == 'Купить':
+        sent = bot.send_message(message.chat.id, 'Выберите бизнес:\n1- Магнит\n2- Пятёрочка\n3- DNS')
+        bot.register_next_step_handler(sent, get_info)
+        # us_id = str(message.from_user.id)
+        # cursor.execute("SELECT business from game WHERE User_ID=?", [us_id])
+        # row = cursor.fetchone()
+        # us_buy = str(row[0])
+        # print(us_buy)
+        #
+        # if us_buy != 'None':
+        #     pass
+        # elif gg == False:
+        #     bot.send_message(message.from_user.id, "Выберите бизнес:\n1 Магнит\n2 Пятёрочка\n3 DNS")
+        #
+        #     gg = True
+        #     print(gg)
+        #     if gg == True:
+        #         bot.send_message(message.from_user.id, "Вы приобрели бизнес!")
+
+    elif text == 'Мои Бизнесы' or text == 'Бизнесы':
+        us_id = str(message.from_user.id)
+        cursor.execute("SELECT business from game WHERE User_ID=?", [us_id])
+        row = cursor.fetchone()
+        us_bus = str(row[0])
+        if us_bus == 'None':
+            bot.send_message(message.chat.id, 'У Вас нет бизнесов.')
+        else:
+            bot.send_message(message.chat.id, 'Ваши бизнесы: ' + str(us_bus))
+        print(row[0])
+    elif text == 'Получить монеты':
+
+        us_id = str(message.from_user.id)
+        cursor.execute("SELECT business from game WHERE User_ID=?", [us_id])
+        row = cursor.fetchone()
+        business = str(row[0])
+        if business == 'Магнит':
+            cursor.execute(''' update game set Score=Score+10 where User_ID=?''', [us_id])
+            conn.commit()
+            bot.send_message(message.chat.id, 'Вы получили 10 очков')
+        elif business == 'Пятёрочка':
+            cursor.execute(''' update game set Score=Score+50 where User_ID=?''', [us_id])
+            conn.commit()
+            bot.send_message(message.chat.id, 'Вы получили 50 очков')
+        elif business == 'DNS':
+            cursor.execute(''' update game set Score=Score+100 where User_ID=?''', [us_id])
+            conn.commit()
+            bot.send_message(message.chat.id, 'Вы получили 100 очков')
+        else:
+            bot.send_message(message.chat.id, 'У Вас нет бизнесов!')
+    elif text == 'Help' or text == 'Помощь':
+        bot.send_message(message.chat.id, 'Помощь во всём!!!', reply_markup=keyboard())
+    else:
+        bot.send_message(message.chat.id, 'Я тебя не понимаю!', reply_markup=keyboard())
 
 
-    # if message.text == "/para":
-    #         if check == True:
-    #             bot.send_message(message.chat.id, 'Ыыыыыы')
-    #             pass
-    #         else:
-    #             bot.send_message(message.chat.id, 'Войдите или зарегистрируйтесь, чтобы использовать данную функцию!')
-    if message.text == 'Group':
-        msg = bot.send_message(message.chat.id, '<b>Введите группу</b>', parse_mode="HTML")
-        bot.register_next_step_handler(msg, para)
 
 
-    print(check)
+
+
 
 
 def keyboard():
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-    btn1 = types.KeyboardButton('/help')
-    btn2 = types.KeyboardButton('/para')
-    btn3 = types.KeyboardButton('/auto')
-    btn4 = types.KeyboardButton('Group')
-    markup.add(btn1, btn2)
-    markup.add(btn4)
-    markup.add(btn3)
+    btn_1 = types.KeyboardButton('Help')
+    btn_2 = types.KeyboardButton('/Login')
+    btn_3 = types.KeyboardButton('Баланс')
+    btn_4 = types.KeyboardButton('Купить')
+    btn_5 = types.KeyboardButton('Мои Бизнесы')
+    btn_6 = types.KeyboardButton('Получить монеты')
+    markup.add(btn_1, btn_3)
+    markup.add(btn_4, btn_5)
+    markup.add(btn_6)
+    markup.add(btn_2)
     return markup
 
 
