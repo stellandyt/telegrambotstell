@@ -22,7 +22,7 @@ score = 1000
 check = False
 gg = False
 gg_2 = True
-# jobs = str(False)
+jobs = False
 
 
 @bot.message_handler(commands=['start'])
@@ -125,28 +125,28 @@ def my_funk(message):
     row = cursor.fetchone()
     us_bus = str(row[0])
     print(us_bus)
-#     jobs = str(True)
-    if us_bus == 'Магнит':
+    jobs = True
+    if us_bus == 'Магнит' and jobs == True:
         bot.send_message(message.chat.id, 'Вы начали работу! Приходите через 24часа!', reply_markup=keyboard())
         time.sleep(60)  #86400 - 24 часа
         cursor.execute(''' update game set Score=Score+100 where User_ID=?''', [us_id])
         conn.commit()
-#         jobs = False
-    elif us_bus == 'Пятёрочка':
+        jobs = False
+    elif us_bus == 'Пятёрочка' and jobs == True:
         bot.send_message(message.chat.id, 'Вы начали работу! Приходите через 24часа!', reply_markup=keyboard())
         time.sleep(60)  #86400 - 24 часа
         cursor.execute(''' update game set Score=Score+500 where User_ID=?''', [us_id])
         conn.commit()
-#         jobs = False
-    elif us_bus == 'DNS':
+        jobs = False
+    elif us_bus == 'DNS' and jobs == True:
         bot.send_message(message.chat.id, 'Вы начали работу! Приходите через 24часа!', reply_markup=keyboard())
         time.sleep(60)  #86400 - 24 часа
         cursor.execute(''' update game set Score=Score+1000 where User_ID=?''', [us_id])
         conn.commit()
-#         jobs = False
+        jobs = False
     else:
         bot.send_message(message.chat.id, 'Купите бизнес, чтобы начать получать прибыль!', reply_markup=keyboard())
-#         jobs = False
+        jobs = False
 
 
 @bot.message_handler(content_types=['text'])
