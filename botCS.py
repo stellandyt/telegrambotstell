@@ -119,7 +119,7 @@ def get_money(message):
 
 @bot.message_handler(commands=['job'])
 def my_funk(message):
-#     global jobs
+    global jobs
     us_id = str(message.from_user.id)
     cursor.execute("SELECT business from game WHERE User_ID=?", [us_id])
     row = cursor.fetchone()
