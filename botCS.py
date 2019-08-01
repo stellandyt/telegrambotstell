@@ -22,7 +22,7 @@ score = 1000
 check = False
 gg = False
 gg_2 = True
-jobs = False
+jobs = str(False)
 
 
 @bot.message_handler(commands=['start'])
@@ -125,8 +125,8 @@ def my_funk(message):
     row = cursor.fetchone()
     us_bus = str(row[0])
     print(us_bus)
-    jobs = True
-    if us_bus == 'Магнит' and jobs == True:
+    jobs = str(True)
+    if us_bus == 'Магнит' and jobs == 'True':
         bot.send_message(message.chat.id, 'Вы начали работу! Приходите через 24часа!', reply_markup=keyboard())
         time.sleep(60)  #86400 - 24 часа
         cursor.execute(''' update game set Score=Score+100 where User_ID=?''', [us_id])
