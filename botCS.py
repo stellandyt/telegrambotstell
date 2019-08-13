@@ -3,6 +3,7 @@ from telebot import types
 import sqlite3
 # import schedule
 import time
+import requests
 
 token = '918573896:AAEM0r2hDXAJoCwy5WtTFZJ92iEmhxmoVeM'
 bot = telebot.TeleBot(token)
@@ -22,7 +23,7 @@ score = 1000
 check = False
 gg = False
 gg_2 = True
-jobs = False
+game = False
 
 
 @bot.message_handler(commands=['start'])
@@ -98,6 +99,85 @@ def get_info(message):
         bot.send_message(message.chat.id, 'Недостаточно монет!', reply_markup=keyboard())
 
 
+def get_id(message):
+    text = message.text
+    serv = 'http://api.warface.ru/user/stat/?name=%s&server=1' % text
+    print(serv)
+    r = requests.get(serv)
+    t = str(r)
+    data = r.json()
+    if t == '<Response [400]>':
+        serv = 'http://api.warface.ru/user/stat/?name=%s&server=2' % text
+        print(serv)
+        r = requests.get(serv)
+        t = str(r)
+        if t == '<Response [400]>':
+            serv = 'http://api.warface.ru/user/stat/?name=%s&server=3' % text
+            print(serv)
+            r = requests.get(serv)
+            t = str(r)
+            if t == '<Response [200]>':
+                data = r.json()
+                print(data)
+                nick = data['nickname']
+                rank = data['rank_id']
+                exp = data['experience']
+                try:
+                    clan = data['clan_name']
+                    bot.send_message(message.chat.id,
+                                     'Ник: ' + str(nick) + '\n' + 'Сервер: Чарли' + '\n' + 'Ранг: ' + str(
+                                         rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: ' + str(clan),
+                                     reply_markup=keyboard())
+                except KeyError:
+                    bot.send_message(message.chat.id,
+                                     'Ник: ' + str(nick) + '\n' + 'Сервер: Чарли' + '\n' + 'Ранг: ' + str(
+                                         rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: No',
+                                     reply_markup=keyboard())
+            else:
+                bot.send_message(message.chat.id, 'Игрок скрыл свою статистику или данный Ник не найден.', reply_markup=keyboard())
+                print('error')
+
+        elif t == '<Response [200]>':
+            data = r.json()
+            print(data)
+            nick = data['nickname']
+            rank = data['rank_id']
+            exp = data['experience']
+            try:
+                clan = data['clan_name']
+                bot.send_message(message.chat.id,
+                                 'Ник: ' + str(nick) + '\n' + 'Сервер: Браво' + '\n' + 'Ранг: ' + str(
+                                     rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: ' + str(clan),
+                                 reply_markup=keyboard())
+            except KeyError:
+                bot.send_message(message.chat.id,
+                                 'Ник: ' + str(nick) + '\n' + 'Сервер: Браво' + '\n' + 'Ранг: ' + str(
+                                     rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: No',
+                                 reply_markup=keyboard())
+
+    elif t == '<Response [200]>':
+        data = r.json()
+        print(data)
+        nick = data['nickname']
+        rank = data['rank_id']
+        exp = data['experience']
+        try:
+            clan = data['clan_name']
+            bot.send_message(message.chat.id,
+                            'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(
+                                rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: ' + str(clan),
+                            reply_markup=keyboard())
+        except KeyError:
+            bot.send_message(message.chat.id,
+                             'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(
+                                 rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: No',
+                             reply_markup=keyboard())
+
+        # bot.send_message(message.chat.id,
+        #                  'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: ' + str(clan),
+        #                  reply_markup=keyboard())
+
+
 def get_money(message):
     text = message.text
     us_id = str(message.from_user.id)
@@ -119,34 +199,28 @@ def get_money(message):
 
 @bot.message_handler(commands=['job'])
 def my_funk(message):
-    global jobs
     us_id = str(message.from_user.id)
     cursor.execute("SELECT business from game WHERE User_ID=?", [us_id])
     row = cursor.fetchone()
     us_bus = str(row[0])
     print(us_bus)
-    jobs = True
-    if us_bus == 'Магнит' and jobs == True:
+    if us_bus == 'Магнит':
         bot.send_message(message.chat.id, 'Вы начали работу! Приходите через 24часа!', reply_markup=keyboard())
         time.sleep(60)  #86400 - 24 часа
         cursor.execute(''' update game set Score=Score+100 where User_ID=?''', [us_id])
         conn.commit()
-        jobs = False
-    elif us_bus == 'Пятёрочка' and jobs == True:
+    elif us_bus == 'Пятёрочка':
         bot.send_message(message.chat.id, 'Вы начали работу! Приходите через 24часа!', reply_markup=keyboard())
         time.sleep(60)  #86400 - 24 часа
         cursor.execute(''' update game set Score=Score+500 where User_ID=?''', [us_id])
         conn.commit()
-        jobs = False
-    elif us_bus == 'DNS' and jobs == True:
+    elif us_bus == 'DNS':
         bot.send_message(message.chat.id, 'Вы начали работу! Приходите через 24часа!', reply_markup=keyboard())
         time.sleep(60)  #86400 - 24 часа
         cursor.execute(''' update game set Score=Score+1000 where User_ID=?''', [us_id])
         conn.commit()
-        jobs = False
     else:
         bot.send_message(message.chat.id, 'Купите бизнес, чтобы начать получать прибыль!', reply_markup=keyboard())
-        jobs = False
 
 
 @bot.message_handler(content_types=['text'])
@@ -168,6 +242,22 @@ def get_text_message(message):
     elif text == 'Купить':
         sent = bot.send_message(message.chat.id, 'Выберите бизнес:\n1- Магнит\n2- Пятёрочка\n3- DNS')
         bot.register_next_step_handler(sent, get_info)
+        # us_id = str(message.from_user.id)
+        # cursor.execute("SELECT business from game WHERE User_ID=?", [us_id])
+        # row = cursor.fetchone()
+        # us_buy = str(row[0])
+        # print(us_buy)
+        #
+        # if us_buy != 'None':
+        #     pass
+        # elif gg == False:
+        #     bot.send_message(message.from_user.id, "Выберите бизнес:\n1 Магнит\n2 Пятёрочка\n3 DNS")
+        #
+        #     gg = True
+        #     print(gg)
+        #     if gg == True:
+        #         bot.send_message(message.from_user.id, "Вы приобрели бизнес!")
+
     elif text == 'Мои Бизнесы' or text == 'Бизнесы':
         us_id = str(message.from_user.id)
         cursor.execute("SELECT business from game WHERE User_ID=?", [us_id])
@@ -183,6 +273,9 @@ def get_text_message(message):
         bot.register_next_step_handler(sent, get_money)
     elif text == 'Help' or text == 'Помощь':
         bot.send_message(message.chat.id, 'Помощь во всём!!!', reply_markup=keyboard())
+    elif text == 'Данные игрока':
+        sent = bot.send_message(message.chat.id, 'Введите ник игрока.')
+        bot.register_next_step_handler(sent, get_id)
     else:
         bot.send_message(message.chat.id, 'Я тебя не понимаю!', reply_markup=keyboard())
 
@@ -196,11 +289,15 @@ def keyboard():
     btn_5 = types.KeyboardButton('Мои Бизнесы')
     btn_6 = types.KeyboardButton('Получить монеты')
     btn_7 = types.KeyboardButton('/job')
+    btn_8 = types.KeyboardButton('Данные игрока')
     markup.add(btn_1, btn_3)
     markup.add(btn_4, btn_5)
     markup.add(btn_6, btn_7)
-    markup.add(btn_2)
+    markup.add(btn_2, btn_8)
     return markup
+
+
+
 
 
 bot.polling(none_stop=True, interval=0)
