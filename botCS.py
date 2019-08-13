@@ -162,6 +162,7 @@ def get_id(message):
         rank = data['rank_id']
         exp = data['experience']
         try:
+            time.sleep(5)
             clan = data['clan_name']
             bot.send_message(message.chat.id,
                             'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: ' + str(clan),
