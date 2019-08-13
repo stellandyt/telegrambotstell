@@ -164,13 +164,11 @@ def get_id(message):
         try:
             clan = data['clan_name']
             bot.send_message(message.chat.id,
-                            'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(
-                                rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: ' + str(clan),
+                            'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: ' + str(clan),
                             reply_markup=keyboard())
         except KeyError:
             bot.send_message(message.chat.id,
-                             'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(
-                                 rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: No',
+                             'Ник: ' + str(nick) + '\n' + 'Сервер: Альфа' + '\n' + 'Ранг: ' + str(rank) + '\n' + 'Exp: ' + str(exp) + '\n' + 'Клан: No',
                              reply_markup=keyboard())
 
         # bot.send_message(message.chat.id,
